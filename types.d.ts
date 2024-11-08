@@ -40,6 +40,11 @@ declare module 'devel-logger' {
      * @param line
      */
     override?: (line: string) => string | false;
+    /**
+     * Function writer, default console.log
+     * @param text
+     */
+    writer?: (text: string) => void;
   }
 
   export interface ColorizeOpts {

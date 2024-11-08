@@ -150,6 +150,9 @@ function DevLogger(config) {
     throw new Error('INVALID_COLOR');
   }
 
+  if (!config.prefix) {
+    throw new Error('PREFIX_REQUIRED');
+  }
 
 
   const _c = Object.freeze({
@@ -160,6 +163,7 @@ function DevLogger(config) {
     timeFormat: config.timeFormat || 'relative',
     icons: config.icons !== false,
     override: config.override || (line => line),
+    writer: console.log,
   });
 
   let logLevelCode = self.LOG_LEVEL_CODES.info;
@@ -375,8 +379,7 @@ function DevLogger(config) {
    * @private
    */
   function write(text) {
-    console.log(text);
-
+    _c.writer(text);
   }
 
   /**

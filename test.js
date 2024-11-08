@@ -165,6 +165,24 @@ const cases = [
 
     console.log('\x1b[2;37m' + '─'.repeat(50) + '\x1b[0m\n');
   },
+  async () => {
+    console.log('\x1b[4;97mOverride line\x1b[0m');
+
+    const Logger = new DevLogger({
+      prefix: 'client',
+      color: 'green',
+      logLevel: 'debug',
+      timeFormat,
+      override() {
+        return false;
+      }
+    });
+
+    Logger.info('Try override')
+
+
+    console.log('\x1b[2;37m' + '─'.repeat(50) + '\x1b[0m\n');
+  },
 ];
 
 async function start() {
