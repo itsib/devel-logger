@@ -9,6 +9,8 @@
   "typings": "types.d.ts",
   "type": "commonjs",
   "scripts": {
-    "test": "node ./test.js"
+    "test": "node ./test.js",
+    "preversion": "echo -e \"New release\"",
+    "postversion": "git push && git push --tags"
   }
 }

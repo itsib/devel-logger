@@ -1,4 +1,4 @@
-declare module 'pretty-logger' {
+declare module 'devel-logger' {
   export type Color = 'red' | 'green' | 'yellow' | 'blue' | 'magenta' | 'cyan';
 
   export type LogLevel = 'silence' | 'info' | 'warn' | 'error' | 'debug';
@@ -42,7 +42,7 @@ declare module 'pretty-logger' {
     format?: number;
   }
 
-  export class PrettyLogger {
+  export class DevLogger {
     constructor(config: Config);
 
     public info(message: string, ...args: any[]): void;

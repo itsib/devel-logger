@@ -5,8 +5,14 @@ Outputs logs of several running threads to one console, separating them in diffe
 ![Screenshot](./screenshot.png)
 
 
-## Usage
+## Installation
 
 ```shell
-npm install -D 
+npm install -D devel-logger
+```
+
+## Usage
+
+```typescript
+import {  } from 'devel-logger';
 ```

@@ -1,4 +1,4 @@
-/// <reference lib="pretty-logger" />
+/// <reference lib="devel-logger" />
 
 /**
  * Colorize string
@@ -135,11 +135,11 @@ function printObject(object, options) {
 /**
  * Creates logger instance
  *
- * @class PrettyLogger
+ * @class DevLogger
  * @param {Config} config
  *
  */
-function PrettyLogger(config) {
+function DevLogger(config) {
   const _c = (c => {
     if ( `${c}` !== '[object Object]') {
       throw new Error('INVALID_CONFIG');
@@ -463,6 +463,6 @@ function PrettyLogger(config) {
   }
 }
 
-exports.PrettyLogger = PrettyLogger;
+exports.DevLogger = DevLogger;
 exports.printObject = printObject;
 
