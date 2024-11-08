@@ -16,7 +16,7 @@ declare module 'devel-logger' {
     /**
      * Output color
      */
-    color: Color;
+    color: Exclude<Color, 'red'>;
     /**
      * Level of logging default is 'info'
      */

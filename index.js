@@ -140,16 +140,22 @@ function printObject(object, options) {
  *
  */
 function DevLogger(config) {
+  const self = this;
+
   if (`${config}` !== '[object Object]') {
     throw new Error('INVALID_CONFIG');
   }
 
-  const self = this;
+  if (!(config.color in self.COLOR_CODES) || config.color === 'red') {
+    throw new Error('INVALID_COLOR');
+  }
+
+
 
   const _c = Object.freeze({
     colorCode: self.COLOR_CODES[config.color],
     esc: '\x1b[',
-    prefix: `[${config.prefix.toUpperCase() || 'LOGGER'}]`,
+    prefix: `[${config.prefix}]`,
     begin: Date.now(),
     timeFormat: config.timeFormat || 'relative',
     icons: config.icons !== false,

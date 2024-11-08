@@ -1,5 +1,7 @@
 const { DevLogger } = require('./index');
 
+const timeFormat = 'human-readable';
+
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const cases = [
@@ -10,12 +12,14 @@ const cases = [
       prefix: 'server',
       color: 'yellow',
       logLevel: 'debug',
+      timeFormat,
     });
 
     const clientLogger = new DevLogger({
       prefix: 'client',
       color: 'blue',
       logLevel: 'debug',
+      timeFormat,
     });
 
     serverLogger.info('Starting Nest application... NestFactory');
@@ -43,6 +47,7 @@ const cases = [
       prefix: 'server',
       color: 'magenta',
       logLevel: 'debug',
+      timeFormat,
     });
 
     Logger.info('Test interpolate float - $%f.2', 123.43534);
@@ -64,6 +69,7 @@ const cases = [
       prefix: 'client',
       color: 'cyan',
       logLevel: 'debug',
+      timeFormat,
     });
 
     clientLogger.info('JavaScript Object:', {
@@ -113,6 +119,7 @@ const cases = [
       prefix: 'client',
       color: 'green',
       logLevel: 'debug',
+      timeFormat,
     });
 
     console.log('Now log level - debug')
@@ -148,6 +155,7 @@ const cases = [
       prefix: 'server',
       color: 'blue',
       logLevel: 'debug',
+      timeFormat,
     });
 
     Logger.error(new Error('Error should display'));
