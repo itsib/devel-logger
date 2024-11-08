@@ -169,6 +169,7 @@ function DevLogger(config) {
       begin: Date.now(),
       timeFormat: c.timeFormat || 'relative',
       icons: c.icons !== false,
+      override: c.override || (line => line),
     });
   })(config);
 
@@ -334,7 +335,9 @@ function DevLogger(config) {
     } else if (iconName === 'icon-error') {
       output += colorize(`${icons[iconName]} `, { code: 1, format: 1, accent: true });
     }
-    output += colorize(stripColors(line), { code: _c.colorCode });
+
+    const rawLine = stripColors(line);
+    output += colorize(_c.override(rawLine), { code: _c.colorCode });
 
     return output;
   }

@@ -34,6 +34,11 @@ declare module 'devel-logger' {
      * Display specify log icons. Default true
      */
     icons?: boolean;
+    /**
+     * Call each line to get line for write.
+     * @param line
+     */
+    override?: (line: string) => string;
   }
 
   export interface ColorizeOpts {
@@ -44,6 +49,8 @@ declare module 'devel-logger' {
 
   export class DevLogger {
     constructor(config: Config);
+
+    public info(message: string, ...args: any[]): void;
 
     public info(message: string, ...args: any[]): void;
 
