@@ -36,9 +36,10 @@ declare module 'devel-logger' {
     icons?: boolean;
     /**
      * Call each line to get line for write.
+     * If returns false, then prevent display line
      * @param line
      */
-    override?: (line: string) => string;
+    override?: (line: string) => string | false;
   }
 
   export interface ColorizeOpts {
@@ -58,7 +59,7 @@ declare module 'devel-logger' {
 
     public debug(message: string, ...args: any[]): void;
 
-    public error(message: string, ...args: any[]): void;
+    public error(message: string | Error | any): void;
 
     public setLogLevel(logLevel: LogLevel): void;
   }

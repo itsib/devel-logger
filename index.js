@@ -140,44 +140,24 @@ function printObject(object, options) {
  *
  */
 function DevLogger(config) {
-  const _c = (c => {
-    if ( `${c}` !== '[object Object]') {
-      throw new Error('INVALID_CONFIG');
-    }
-
-    const colorCodes = {
-      red: 1,
-      green: 2,
-      yellow: 3,
-      blue: 4,
-      magenta: 5,
-      cyan: 6,
-    };
-    const colorCode = colorCodes[c.color];
-
-    return Object.freeze({
-      colorCode,
-      esc: '\x1b[',
-      prefix: `[${c.prefix.toUpperCase() || 'LOGGER'}]`,
-      begin: Date.now(),
-      timeFormat: c.timeFormat || 'relative',
-      icons: c.icons !== false,
-      override: c.override || (line => line),
-    });
-  })(config);
-
-  const logLevelCodes = {
-    silence: 0,
-    error: 1,
-    warn: 2,
-    info: 3,
-    debug: 4,
-  };
-  let logLevelCode = logLevelCodes.info;
-
-  if (config.logLevel && config.logLevel in logLevelCodes) {
-    logLevelCode = logLevelCodes[config.logLevel];
+  if (`${config}` !== '[object Object]') {
+    throw new Error('INVALID_CONFIG');
   }
+
+  const self = this;
+
+  const _c = Object.freeze({
+    colorCode: self.COLOR_CODES[config.color],
+    esc: '\x1b[',
+    prefix: `[${config.prefix.toUpperCase() || 'LOGGER'}]`,
+    begin: Date.now(),
+    timeFormat: config.timeFormat || 'relative',
+    icons: config.icons !== false,
+    override: config.override || (line => line),
+  });
+
+  let logLevelCode = self.LOG_LEVEL_CODES.info;
+  setLogLevel(config.logLevel);
 
   const st = '(?:\\u0007|\\u001B\\u005C|\\u009C)';
   const colorsRegEx = new RegExp([
@@ -193,11 +173,16 @@ function DevLogger(config) {
     'boolean': true,
     'symbol': true,
   };
-  const icons = {
-    'icon-debug': '🏗',
-    'icon-warn': '⚠',
-    'icon-error': '🞮',
-  };
+
+  /**
+   * Update log level value
+   * @param logLevel
+   */
+  function setLogLevel(logLevel) {
+    if (logLevel && typeof logLevel === 'string' && logLevel in self.LOG_LEVEL_CODES) {
+      logLevelCode = self.LOG_LEVEL_CODES[logLevel];
+    }
+  }
 
   /**
    * Remove colors from string
@@ -241,6 +226,24 @@ function DevLogger(config) {
     }
 
     return formatted;
+  }
+
+  /**
+   * Returns log icon
+   * @param id
+   * @returns {string}
+   */
+  function getIcon(id) {
+    switch (id) {
+      case 'icon-debug':
+        return colorize('🏗', { code: 7, format: 0, accent: false });
+      case 'icon-warn':
+        return colorize('⚠', { code: 1, format: 2, accent: false });
+      case 'icon-error':
+        return colorize('✘', { code: 1, format: 1, accent: true });
+      default:
+        return '';
+    }
   }
 
   /**
@@ -325,25 +328,37 @@ function DevLogger(config) {
   }
 
   /**
+   * Build log line start. eq. "[PREFIX] 000:00:00.000 ⚠"
+   * @param {string} [iconId]
+   * @returns {string}
+   */
+  function getLineBegin(iconId) {
+    let output = ''
+    output += colorize(_c.prefix, { code: _c.colorCode, accent: true, format: 1 });
+    output += ' ';
+    output += colorize(datetime(), { code: 7, format: 2 });
+    output += ' ';
+
+    if (iconId && _c.icons) {
+      output += getIcon(iconId);
+      output += ' ';
+    }
+
+    return output;
+  }
+
+  /**
    * Prepare output string. Add prefix, date or time, etc.
    * @param {string} line - format output line
-   * @param {string} [iconName] - Log icon
+   * @param {string} [iconId] - Log icon
    * @returns {string}
    * @private
    */
-  function formatLine(line, iconName) {
-    let output = colorize(_c.prefix, { code: _c.colorCode, accent: true, format: 1 });
-    output += colorize(` ${datetime()} `, { code: 7, format: 2 });
-    if (iconName === 'icon-debug') {
-      output += colorize(`${icons[iconName]} `, { code: 7, format: 0, accent: false });
-    } else if (iconName === 'icon-warn') {
-      output += colorize(`${icons[iconName]} `, { code: 1, format: 2, accent: false });
-    } else if (iconName === 'icon-error') {
-      output += colorize(`${icons[iconName]} `, { code: 1, format: 1, accent: true });
-    }
+  function formatLine(line, iconId) {
+    let output = '';
+    output += getLineBegin(iconId);
 
-    const rawLine = stripColors(line);
-    output += colorize(_c.override(rawLine), { code: _c.colorCode });
+    output += colorize(line, { code: _c.colorCode });
 
     return output;
   }
@@ -360,17 +375,36 @@ function DevLogger(config) {
 
   /**
    * Format error and stack trace
-   * @param error
-   * @param message
+   * @param {Error} error
    */
-  function writeError(error, message) {
-    console.error(error);
+  function printError(error) {
+    const message = error.toString();
+    // const cause = error.cause;
+    const stack = error.stack.replace(message, '').split('\n');
+
+
+    let output = getLineBegin('icon-error');
+    output += colorize(message, { code: 1, accent: true, format: 1 });
+    write(output);
+
+
+    for (const line of stack) {
+      if (!line.trim()) continue;
+
+      let lineOutput = getLineBegin();
+      lineOutput += colorize(line, { code: 1, accent: false, format: 0 });
+      write(lineOutput);
+    }
+
+    write(getLineBegin() + ' ');
   }
 
+  /**
+   * Update log level
+   * @param logLevel
+   */
   this.setLogLevel = function (logLevel) {
-    if (logLevel && typeof logLevel === 'string' && logLevel in logLevelCodes) {
-      logLevelCode = logLevelCodes[logLevel];
-    }
+    setLogLevel(logLevel);
   }
 
   /**
@@ -380,7 +414,7 @@ function DevLogger(config) {
    */
   this.print = function (message, ...args) {
     let iconName = undefined;
-    if (args[0] && args[0] in icons) {
+    if (typeof args[0] === 'string' && getIcon(args[0])) {
       iconName = args[0];
       args.shift();
     }
@@ -403,8 +437,12 @@ function DevLogger(config) {
 
     const lines = message.split('\n');
     for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      write(formatLine(line, iconName));
+      let line = lines[i];
+      line = stripColors(line);
+      const overridden = _c.override(line);
+      if (overridden === false) continue;
+
+      write(formatLine(overridden, iconName));
     }
 
     // render objects
@@ -455,29 +493,47 @@ function DevLogger(config) {
   /**
    * Logger error
    * @param {string|Error} error Log message or some thing
-   * @param {...any[]} args
    */
-  this.error = function (error, ...args) {
+  this.error = function (error) {
     if (logLevelCode >= 1) {
-      if (_c.icons) {
-        args.unshift('icon-error');
-      }
-
-
       if (error instanceof Error) {
-        writeError(error);
-        return;
+        printError(error);
+      } else if (typeof error === 'string') {
+        printError(new Error(error));
       }
-      if (typeof error === 'string' && args[0] instanceof Error) {
-        this.print(error);
-        writeError(args[0]);
-        return;
-      }
-      this.print(error, ...args);
     }
   }
 }
 
+Object.defineProperties(DevLogger.prototype, {
+  'LOG_LEVEL_CODES': {
+    value: {
+      silence: 0,
+      error: 1,
+      warn: 2,
+      info: 3,
+      debug: 4,
+    },
+    configurable: false,
+    writable: false,
+    enumerable: false,
+  },
+  'COLOR_CODES': {
+    value: {
+      red: 1,
+      green: 2,
+      yellow: 3,
+      blue: 4,
+      magenta: 5,
+      cyan: 6,
+    },
+    configurable: false,
+    writable: false,
+    enumerable: false,
+  },
+});
+
 exports.DevLogger = DevLogger;
+
 exports.printObject = printObject;
 
