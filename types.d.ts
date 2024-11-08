@@ -50,7 +50,7 @@ declare module 'devel-logger' {
   export class DevLogger {
     constructor(config: Config);
 
-    public info(message: string, ...args: any[]): void;
+    public print(message: string, ...args: any[]): void;
 
     public info(message: string, ...args: any[]): void;
 
@@ -59,5 +59,7 @@ declare module 'devel-logger' {
     public debug(message: string, ...args: any[]): void;
 
     public error(message: string, ...args: any[]): void;
+
+    public setLogLevel(logLevel: LogLevel): void;
   }
 }

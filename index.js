@@ -144,13 +144,7 @@ function DevLogger(config) {
     if ( `${c}` !== '[object Object]') {
       throw new Error('INVALID_CONFIG');
     }
-    const logLevelCodes = {
-      silence: 0,
-      error: 1,
-      warn: 2,
-      info: 3,
-      debug: 4,
-    };
+
     const colorCodes = {
       red: 1,
       green: 2,
@@ -162,7 +156,6 @@ function DevLogger(config) {
     const colorCode = colorCodes[c.color];
 
     return Object.freeze({
-      levelCode: logLevelCodes[c.logLevel || 'info'],
       colorCode,
       esc: '\x1b[',
       prefix: `[${c.prefix.toUpperCase() || 'LOGGER'}]`,
@@ -172,6 +165,19 @@ function DevLogger(config) {
       override: c.override || (line => line),
     });
   })(config);
+
+  const logLevelCodes = {
+    silence: 0,
+    error: 1,
+    warn: 2,
+    info: 3,
+    debug: 4,
+  };
+  let logLevelCode = logLevelCodes.info;
+
+  if (config.logLevel && config.logLevel in logLevelCodes) {
+    logLevelCode = logLevelCodes[config.logLevel];
+  }
 
   const st = '(?:\\u0007|\\u001B\\u005C|\\u009C)';
   const colorsRegEx = new RegExp([
@@ -361,6 +367,12 @@ function DevLogger(config) {
     console.error(error);
   }
 
+  this.setLogLevel = function (logLevel) {
+    if (logLevel && typeof logLevel === 'string' && logLevel in logLevelCodes) {
+      logLevelCode = logLevelCodes[logLevel];
+    }
+  }
+
   /**
    * Print many lines text log
    * @param {string} message
@@ -407,7 +419,7 @@ function DevLogger(config) {
    * @param {...any[]} args
    */
   this.debug = function (message, ...args) {
-    if (_c.levelCode >= 4) {
+    if (logLevelCode >= 4) {
       if (_c.icons) {
         args.unshift('icon-debug');
       }
@@ -421,7 +433,7 @@ function DevLogger(config) {
    * @param {...any[]} args
    */
   this.info = function (message, ...args) {
-    if (_c.levelCode >= 3) {
+    if (logLevelCode >= 3) {
       this.print(message, ...args);
     }
   }
@@ -432,7 +444,7 @@ function DevLogger(config) {
    * @param {...any[]} args
    */
   this.warn = function (message, ...args) {
-    if (_c.levelCode >= 2) {
+    if (logLevelCode >= 2) {
       if (_c.icons) {
         args.unshift('icon-warn');
       }
@@ -446,7 +458,7 @@ function DevLogger(config) {
    * @param {...any[]} args
    */
   this.error = function (error, ...args) {
-    if (_c.levelCode >= 1) {
+    if (logLevelCode >= 1) {
       if (_c.icons) {
         args.unshift('icon-error');
       }
