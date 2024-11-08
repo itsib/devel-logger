@@ -50,19 +50,19 @@ Logger.debug('Debug message');
 
 - timeFormat="ISO"
 
-    ![Datetime Format Screenshot](./images/datetime-iso.png)
+    ![Datetime Format Screenshot](https://raw.githubusercontent.com/itsib/devel-logger/master/images/datetime-iso.png)
 
 - timeFormat="relative"
 
-  ![Datetime Format Screenshot](./images/datetime-relative.png)
+  ![Datetime Format Screenshot](https://raw.githubusercontent.com/itsib/devel-logger/master/images/datetime-relative.png)
 
 - timeFormat="human-readable"
 
-  ![Datetime Format Screenshot](./images/datetime-human-readable.png)
+  ![Datetime Format Screenshot](https://raw.githubusercontent.com/itsib/devel-logger/master/images/datetime-human-readable.png)
 
 ### Icons
 
 Some log levels supports icons represents like:
 
-![Icons Screenshot](./images/icons-represents.png)
+![Icons Screenshot](https://raw.githubusercontent.com/itsib/devel-logger/master/images/icons-represents.png)
 
