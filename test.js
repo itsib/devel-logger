@@ -1,4 +1,4 @@
-const { DevLogger } = require('./dist/dev-logger');
+const { DevLogger } = require('./dist/index.cjs');
 
 const timeFormat = 'relative';
 
@@ -178,6 +178,10 @@ const cases = [
     } catch (error) {
       Logger.error(error);
     }
+
+    Logger.error(new Error(`http proxy error: /api/v1/users
+Error: connect ECONNREFUSED 127.0.0.1:3000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1607:16)`))
 
 
     console.log('\x1b[2;37m' + '─'.repeat(50) + '\x1b[0m\n');

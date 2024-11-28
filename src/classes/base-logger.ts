@@ -70,6 +70,11 @@ export class BaseLogger {
       stack = [];
     }
 
+    let nextLines;
+    [message, ...nextLines] = message.split('\n')
+    stack = [...nextLines, ...stack];
+    message = stripColor(message);
+
     // render error message
     let output = this._addPrefix('');
     output = this._addDatetime(output);
@@ -78,8 +83,11 @@ export class BaseLogger {
     this._write(output)
 
     // render stack trace
-    for (const line of stack) {
-      if (!line.trim()) continue;
+    for (let line of stack) {
+      line = stripColor(line).trim();
+      if (!line) continue;
+
+      line = '     ' + line;
 
       let lineOutput = this._addPrefix('');
       lineOutput = this._addDatetime(lineOutput);
