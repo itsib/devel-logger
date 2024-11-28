@@ -9,7 +9,6 @@
     "logging"
   ],
   "license": "ISC",
-  "type": "module",
   "scripts": {
     "test": "node ./test.js",
     "build": "unbuild",
