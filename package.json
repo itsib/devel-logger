@@ -9,12 +9,16 @@
     "logging"
   ],
   "license": "ISC",
-  "main": "index.js",
-  "typings": "types.d.ts",
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
     "test": "node ./test.js",
+    "build": "unbuild",
     "preversion": "echo -e \"New release\"",
     "postversion": "git push && git push --tags"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "typescript": "~5.7.2",
+    "unbuild": "^2.0.0"
   }
 }

@@ -1,6 +1,6 @@
-const { DevLogger } = require('./index');
+const { DevLogger } = require('./dist/dev-logger');
 
-const timeFormat = 'human-readable';
+const timeFormat = 'relative';
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -9,14 +9,14 @@ const cases = [
     console.log('\x1b[4;97mUsage two instance same time\x1b[0m');
 
     const serverLogger = new DevLogger({
-      prefix: 'server',
+      prefix: 'SERVER',
       color: 'yellow',
       logLevel: 'debug',
       timeFormat,
     });
 
     const clientLogger = new DevLogger({
-      prefix: 'client',
+      prefix: 'CLIENT',
       color: 'blue',
       logLevel: 'debug',
       timeFormat,
@@ -44,7 +44,7 @@ const cases = [
     console.log('\x1b[4;97mTest interpolation\x1b[0m');
 
     const Logger = new DevLogger({
-      prefix: 'server',
+      prefix: 'SERVER',
       color: 'magenta',
       logLevel: 'debug',
       timeFormat,
@@ -66,7 +66,7 @@ const cases = [
     console.log('\x1b[4;97mDisplay some objects\x1b[0m');
 
     const clientLogger = new DevLogger({
-      prefix: 'client',
+      prefix: 'CLIENT',
       color: 'cyan',
       logLevel: 'debug',
       timeFormat,
@@ -116,7 +116,7 @@ const cases = [
     console.log('\x1b[4;97mSet log level\x1b[0m');
 
     const Logger = new DevLogger({
-      prefix: 'client',
+      prefix: 'CLIENT',
       color: 'green',
       logLevel: 'debug',
       timeFormat,
@@ -152,7 +152,7 @@ const cases = [
     console.log('\x1b[4;97mDisplay errors\x1b[0m');
 
     const Logger = new DevLogger({
-      prefix: 'server',
+      prefix: 'SERVER',
       color: 'blue',
       logLevel: 'debug',
       timeFormat,
@@ -160,7 +160,24 @@ const cases = [
 
     Logger.error(new Error('Error should display'));
     Logger.error(new SyntaxError('Error should display'));
-    Logger.error(new URIError('Error should display'));
+    Logger.error(new ReferenceError('Error should display'));
+
+    function throwError() {
+      throw new URIError('Error should display');
+    }
+    function second() {
+      throwError();
+    }
+    function first() {
+      second()
+    }
+
+    try {
+      first();
+
+    } catch (error) {
+      Logger.error(error);
+    }
 
 
     console.log('\x1b[2;37m' + '─'.repeat(50) + '\x1b[0m\n');
@@ -173,8 +190,8 @@ const cases = [
       color: 'green',
       logLevel: 'debug',
       timeFormat,
-      override() {
-        return false;
+      override(level, message) {
+        return 'override - ' + message;
       }
     });
 

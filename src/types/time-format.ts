@@ -1,0 +1,1 @@
+export type TimeFormat = 'ISO' | 'relative' | 'human-readable';
