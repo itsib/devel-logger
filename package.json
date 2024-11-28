@@ -1,7 +1,7 @@
 {
   "name": "devel-logger",
   "description": "Outputs logs of several running threads to one console, separating them in different colors. There is support for interpolation and output of javascript objects. Displays the time from the start of the service.",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "author": "Sergei Krainov",
   "keywords": [
     "log",
